@@ -4,6 +4,7 @@
 #include <GLUT/GLUT.h>
 #include <vector>
 #include "nvMath.h"
+#include <string>
 
 unsigned width = 1024;
 unsigned height = 768;
@@ -13,6 +14,8 @@ unsigned shadowMapSize = 512;
 float theta = M_PI / 2;
 float phi = M_PI / 2;
 float camDist = 3;
+
+bool isToon = false;
 
 nv::vec3f camFocus(0, 0, 0);
 nv::vec3f camUp(0, 1, 0);
@@ -304,8 +307,14 @@ void setShaders()
     f = glCreateShader(GL_FRAGMENT_SHADER);
     
     vs = textFileRead("../../ShaderFiles/phong.vert");
-    fs = textFileRead("../../ShaderFiles/toon.frag");
-    
+    if(!isToon)
+    {
+        fs = textFileRead("../../ShaderFiles/phong.frag");
+    }
+    else
+    {
+        fs = textFileRead("../../ShaderFiles/toon.frag");
+    }
     const char *vv = vs;
     const char *ff = fs;
     
@@ -421,6 +430,11 @@ int main(int argc, char** argv)
             dlPosList.push_back(nv::vec3f(atof(argv[i+1]), atof(argv[i+2]), atof(argv[i+3])));
             dlColorList.push_back(nv::vec3f(atof(argv[i+4]), atof(argv[i+5]), atof(argv[i+6])));
             i+=6;
+        }
+        
+        if(strcmp(argv[i], "-toon") == 0)
+        {
+            isToon = true;
         }
     }
     
