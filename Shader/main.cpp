@@ -77,13 +77,17 @@ void makeShadowmap(const nv::vec3f& position)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
+    GLfloat randColors[1024*1024*4];
+    for(unsigned i=0; i<1024*1024*4; i++)
+        randColors[i] = rand() / float(RAND_MAX);
+    
     for (unsigned face = 0; face < 6; face++)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_DEPTH_COMPONENT24,
-                     shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGBA,
+                     shadowMapSize, shadowMapSize, 0, GL_RGBA, GL_FLOAT, randColors);
     }
     
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, newCubemapTexID, 0);
+    /*glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, newCubemapTexID, 0);
     
     glGenRenderbuffers(1, &depthBufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
@@ -91,9 +95,9 @@ void makeShadowmap(const nv::vec3f& position)
     
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
     GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, drawBuffers);
+    glDrawBuffers(2, drawBuffers);*/
     
-    
+    /*
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -117,7 +121,7 @@ void makeShadowmap(const nv::vec3f& position)
     
     setGeometry();
     
-    glPopAttrib();
+    glPopAttrib();*/
     
     plShadowMaps.push_back(newCubemapTexID);
 }

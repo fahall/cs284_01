@@ -49,7 +49,7 @@ void main()
         color += (diffuseColor + specColor) * dc[i];
     }
     
-    //color = textureCube(shadowMaps[0], vec3(normal)).xyz;
+    color = textureCube(shadowMaps[0], vec3(normal)).xyz;
     
     gl_FragColor = vec4(color, 1.0);
 }
