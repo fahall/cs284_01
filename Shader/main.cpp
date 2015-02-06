@@ -234,6 +234,9 @@ void keyPress(unsigned char key, int x, int y)
         case 27:
             exit(0);
             break;
+        case 32:
+            exit(0);
+            break;
     }
 }
 

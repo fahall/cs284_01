@@ -53,6 +53,6 @@ void main()
     
     //color = textureCube(shadowMaps[0], vec3(normal)).xyz;
     
-    color = vec3(float(npl));
+    
     gl_FragColor = vec4(color, 1.0);
 }
