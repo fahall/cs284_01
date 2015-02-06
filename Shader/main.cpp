@@ -38,6 +38,7 @@ void setFrameBuffer()
     
     glGenTextures(1, &frameTexID);
     glBindTexture(GL_TEXTURE_2D, frameTexID);
+    //glActiveTexture(GL_TEXTURE0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -70,7 +71,7 @@ void makeShadowmap(const nv::vec3f& position)
     
     glGenTextures(1, &newCubemapTexID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, newCubemapTexID);
-    glActiveTexture(GL_TEXTURE0+plShadowMaps.size());
+    glActiveTexture(GL_TEXTURE1+plShadowMaps.size());
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
@@ -136,7 +137,7 @@ void renderBitmapString(float x, float y, void *font,const char *string){
 std::vector<nv::vec3f> plPosList, dlPosList;
 std::vector<nv::vec3f> plColorList, dlColorList;
 nv::vec3f kd, ks, ka;
-float sp;
+float sp = 1;
 
 void setUniformsPhong()
 {
