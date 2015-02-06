@@ -304,7 +304,7 @@ void setShaders()
     f = glCreateShader(GL_FRAGMENT_SHADER);
     
     vs = textFileRead("../../ShaderFiles/phong.vert");
-    fs = textFileRead("../../ShaderFiles/phong.frag");
+    fs = textFileRead("../../ShaderFiles/toon.frag");
     
     const char *vv = vs;
     const char *ff = fs;

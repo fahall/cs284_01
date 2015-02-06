@@ -1,4 +1,4 @@
-varying vec3 vertPos;
+ varying vec3 vertPos;
 varying float position; //in WORLD coordinates
 varying vec3 normal; //In WORLD coordinates
 
