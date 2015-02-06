@@ -24,6 +24,7 @@ void main()
         vec3 inDir = normalize(lightPos - vertPos);
         vec3 outDir = normalize(eyePos - vertPos);
         vec3 halfVec = normalize(inDir + outDir);
+        vec3 reflection = normalize((-1.0 * inDir) + (2.0 * (dot(inDir, normal)) * normal));
         
         vec3 diffuseColor = dot(inDir, normal) * kd;
         vec3 specColor = pow(clamp(dot(halfVec, normal), 0.0, 1.0), sp) * ks;
@@ -35,6 +36,7 @@ void main()
         vec3 inDir = -normalize(dl[i]);
         vec3 outDir = normalize(eyePos - vertPos);
         vec3 halfVec = normalize(inDir + outDir);
+        vec3 reflection = normalize((-1.0 * inDir) + (2.0 * (dot(inDir, normal)) * normal));
         
         vec3 diffuseColor = dot(inDir, normal) * kd;
         vec3 specColor = pow(clamp(dot(halfVec, normal), 0.0, 1.0), sp) * ks;
