@@ -8,7 +8,7 @@
 unsigned width = 1024;
 unsigned height = 768;
 
-unsigned shadowMapSize = 1024;
+unsigned shadowMapSize = 512;
 
 float theta = M_PI / 2;
 float phi = M_PI / 2;
@@ -77,8 +77,8 @@ void makeShadowmap(const nv::vec3f& position)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
-    GLfloat randColors[1024*1024*4];
-    for(unsigned i=0; i<1024*1024*4; i++)
+    GLfloat randColors[512*512*4];
+    for(unsigned i=0; i<512*512*4; i++)
         randColors[i] = rand() / float(RAND_MAX);
     
     for (unsigned face = 0; face < 6; face++)
