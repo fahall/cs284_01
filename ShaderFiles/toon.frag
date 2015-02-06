@@ -1,9 +1,12 @@
-varying float position;
-varying vec3 normal;
-uniform vec3 ka, kd, ks;
-uniform float sp;
-uniform vec3[5] pl;
-uniform vec3[5] dl;
+uniform vec3 eyePos;
+varying vec3 normal, vertPos;
+varying vec3 normal; //In WORLD coordinates
+uniform vec3 ka; //Ambient Color
+uniform vec3 kd; //Diffuse Color... could also be used for textures.
+uniform vec3 ks; //Specular color
+uniform float sp;   //Specular Exponent (aka shininess)
+uniform vec3[5] pl; //Point Lights
+uniform vec3[5] dl; //Directional Lights
 
 
 void main()
