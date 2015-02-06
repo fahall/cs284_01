@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>58DF1F1B-5CEF-4A53-8BDC-222051C2C8B3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Shader</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>478829296DBEE19B8EA0A8FE4E5057F0CF315E03</key>
+		<string>https://github.com/rachelalbert/cs284_2015.git</string>
+		<key>7D0F1D273AEAA62FCE8876FD6C934FFCEFD63063</key>
+		<string>github.com:fahall/cs284_01.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Shader.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>478829296DBEE19B8EA0A8FE4E5057F0CF315E03</key>
+		<string>../../../cs284_2015</string>
+		<key>7D0F1D273AEAA62FCE8876FD6C934FFCEFD63063</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:fahall/cs284_01.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7D0F1D273AEAA62FCE8876FD6C934FFCEFD63063</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7D0F1D273AEAA62FCE8876FD6C934FFCEFD63063</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cs284_01</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>478829296DBEE19B8EA0A8FE4E5057F0CF315E03</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cs284_2015</string>
+		</dict>
+	</array>
+</dict>
+</plist>
