@@ -25,6 +25,7 @@ void main()
         vec3 lightPos = pp[i];
         vec3 inDir = normalize(lightPos - vertPos);
         vec3 outDir = normalize(eyePos - vertPos);
+        vec3 reflection = normalize((-1.0 * inDir) + (2.0 * (dot(inDir, normal)) * normal));
         
         vec3 rDir = -inDir + 2.0 * clamp(dot(inDir, normal), 0.0, 1.0) * normal;
         
@@ -39,6 +40,7 @@ void main()
     {
         vec3 inDir = -normalize(dd[i]);
         vec3 outDir = normalize(eyePos - vertPos);
+        vec3 reflection = normalize((-1.0 * inDir) + (2.0 * (dot(inDir, normal)) * normal));
         
         vec3 rDir = -inDir + 2.0 * clamp(dot(inDir, normal), 0.0, 1.0) * normal;
         
