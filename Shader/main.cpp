@@ -8,8 +8,8 @@
 unsigned width = 1024;
 unsigned height = 768;
 
-float theta = M_PI / 6;
-float phi = M_PI / 3;
+float theta = M_PI / 2;
+float phi = M_PI / 2;
 float camDist = 3;
 
 nv::vec3f camFocus(0, 0, 0);
@@ -50,12 +50,37 @@ void renderBitmapString(float x, float y, void *font,const char *string){
         glutBitmapCharacter(font, *c);
 }
 
+std::vector<nv::vec3f> plPosList, dlPosList;
+std::vector<nv::vec3f> plColorList, dlColorList;
+nv::vec3f kd, ks, ka;
+float sp;
+
 void setUniformsPhong()
 {
     nv::vec3f camPos = nv::vec3f(sin(phi)*cos(theta), cos(phi), sin(phi)*sin(theta)) * camDist;
-    nv::vec3f lightPos(4, 4, 4);
-    glUniform3fv(glGetUniformLocation(progID, "lightPos"), 1, (GLfloat*) lightPos);
     glUniform3fv(glGetUniformLocation(progID, "eyePos"), 1, (GLfloat*) camPos);
+    glUniform3fv(glGetUniformLocation(progID, "kd"), 1, (GLfloat*) kd);
+    glUniform3fv(glGetUniformLocation(progID, "ks"), 1, (GLfloat*) ks);
+    glUniform3fv(glGetUniformLocation(progID, "ka"), 1, (GLfloat*) ka);
+    glUniform1f(glGetUniformLocation(progID, "sp"), sp);
+    glUniform1i(glGetUniformLocation(progID, "npl"), plPosList.size());
+    glUniform1i(glGetUniformLocation(progID, "ndl"), dlPosList.size());
+    char varName[128];
+    for(unsigned i=0; i<plPosList.size(); i++)
+    {
+        sprintf(varName, "pl[%d]", i);
+        glUniform3fv(glGetUniformLocation(progID, varName), 1, (GLfloat*) plPosList[i]);
+        sprintf(varName, "pc[%d]", i);
+        glUniform3fv(glGetUniformLocation(progID, varName), 1, (GLfloat*) plColorList[i]);
+    }
+    for(unsigned i=0; i<dlPosList.size(); i++)
+    {
+        sprintf(varName, "dl[%d]", i);
+        glUniform3fv(glGetUniformLocation(progID, varName), 1, (GLfloat*) dlPosList[i]);
+        sprintf(varName, "dc[%d]", i);
+        glUniform3fv(glGetUniformLocation(progID, varName), 1, (GLfloat*) dlColorList[i]);
+    }
+    
 }
 
 void display(void)
@@ -83,7 +108,7 @@ void display(void)
     glEnable(GL_DEPTH_TEST);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glutSolidSphere(2, 100, 100);
-    glutSolidCube(3);
+    // glutSolidCube(3);
     glPopAttrib();
     
     glReadPixels(mouseX-1, height - mouseY, 1, 1, GL_RGBA, GL_FLOAT, (GLfloat*)&rgba);
@@ -127,8 +152,10 @@ void display(void)
     glutSwapBuffers();
 }
 
-void reshape(int width, int height)
+void reshape(int w, int h)
 {
+    width = w;
+    height = h;
     glViewport(0, 0, width, height);
 }
 
@@ -275,6 +302,56 @@ void mouseMove(int x, int y)
 
 int main(int argc, char** argv)
 {
+    for(int i=1; i<argc; i++)
+    {
+        if(strcmp(argv[i], "-kd") == 0)
+        {
+            kd.x = atof(argv[i+1]);
+            kd.y = atof(argv[i+2]);
+            kd.z = atof(argv[i+3]);
+            i+=3;
+        }
+        
+        if(strcmp(argv[i], "-ks") == 0)
+        {
+            ks.x = atof(argv[i+1]);
+            ks.y = atof(argv[i+2]);
+            ks.z = atof(argv[i+3]);
+            i+=3;
+        }
+        if(strcmp(argv[i], "-ka") == 0)
+        {
+            ka.x = atof(argv[i+1]);
+            ka.y = atof(argv[i+2]);
+            ka.z = atof(argv[i+3]);
+            i+=3;
+        }
+        if(strcmp(argv[i], "-ka") == 0)
+        {
+            ka.x = atof(argv[i+1]);
+            ka.y = atof(argv[i+2]);
+            ka.z = atof(argv[i+3]);
+            i+=3;
+        }
+        if(strcmp(argv[i], "-sp") == 0)
+        {
+            sp = atof(argv[i+1]);
+            i+=1;
+        }
+        if(strcmp(argv[i], "-pl") == 0)
+        {
+            plPosList.push_back(nv::vec3f(atof(argv[i+1]), atof(argv[i+2]), atof(argv[i+3])));
+            plColorList.push_back(nv::vec3f(atof(argv[i+4]), atof(argv[i+5]), atof(argv[i+6])));
+            i+=6;
+        }
+        if(strcmp(argv[i], "-dl") == 0)
+        {
+            dlPosList.push_back(nv::vec3f(atof(argv[i+1]), atof(argv[i+2]), atof(argv[i+3])));
+            dlColorList.push_back(nv::vec3f(atof(argv[i+4]), atof(argv[i+5]), atof(argv[i+6])));
+            i+=6;
+        }
+    }
+    
     glutInit(&argc, argv);
     
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);

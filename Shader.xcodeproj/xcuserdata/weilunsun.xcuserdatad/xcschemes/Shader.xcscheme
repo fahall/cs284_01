@@ -57,6 +57,12 @@
             ReferencedContainer = "container:Shader.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-kd 0.2 0.3 0.2 -ks 0.5 0.5 0.5 -ka 0.1 0.1 0.1 -sp 10 -pl 4 4 4 1 1 1 -dl 1 1 1 0 0 0"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
