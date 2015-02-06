@@ -38,6 +38,7 @@ void setFrameBuffer()
     
     glGenTextures(1, &frameTexID);
     glBindTexture(GL_TEXTURE_2D, frameTexID);
+    glActiveTexture(GL_TEXTURE0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -68,9 +69,12 @@ void makeShadowmap(const nv::vec3f& position)
     if(depthBufferID)
         glDeleteFramebuffers(1, &depthBufferID);
     
+    if(frameBufferID)
+        glDeleteFramebuffers(1, &frameBufferID);
+    
     glGenTextures(1, &newCubemapTexID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, newCubemapTexID);
-    glActiveTexture(GL_TEXTURE0+plShadowMaps.size());
+    glActiveTexture(GL_TEXTURE1+plShadowMaps.size());
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
@@ -83,11 +87,14 @@ void makeShadowmap(const nv::vec3f& position)
     
     for (unsigned face = 0; face < 6; face++)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGBA,
-                     shadowMapSize, shadowMapSize, 0, GL_RGBA, GL_FLOAT, randColors);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_DEPTH_COMPONENT32,
+                     shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, randColors);
     }
     
-    /*glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, newCubemapTexID, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, newCubemapTexID, 0);
+    
+    glGenFramebuffers(1, &frameBufferID);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
     
     glGenRenderbuffers(1, &depthBufferID);
     glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
@@ -95,33 +102,7 @@ void makeShadowmap(const nv::vec3f& position)
     
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
     GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, drawBuffers);*/
-    
-    /*
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glUseProgram(0);
-    
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(90, float(width) / height, 0.1, 100);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    
-    gluLookAt(position.x, position.y, position.z+1, position.x, position.y, position.z, 0, 1, 0);
-    
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glEnable(GL_DEPTH_TEST);
-    
-    glColor3f(1, 1, 1);
-    
-    setGeometry();
-    
-    glPopAttrib();*/
+    glDrawBuffers(2, drawBuffers);
     
     plShadowMaps.push_back(newCubemapTexID);
 }
@@ -169,6 +150,8 @@ void setUniformsPhong()
 
 void display(void)
 {
+    
+    
     nv::vec4f rgba;
     
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
@@ -463,10 +446,10 @@ int main(int argc, char** argv)
     
     setShaders();
     
-    setFrameBuffer();
-    
     for(unsigned i=0; i<plPosList.size(); i++)
         makeShadowmap(plPosList[i]);
+    
+    setFrameBuffer();
     
     glutMainLoop();
     
