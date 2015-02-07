@@ -16,6 +16,8 @@ uniform vec3 dc[10]; //Point Lights
 
 uniform samplerCube shadowMaps[10];
 
+
+
 void main()
 {
     vec3 color = ka;

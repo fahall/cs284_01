@@ -15,7 +15,8 @@ float theta = M_PI / 2;
 float phi = M_PI / 2;
 float camDist = 3;
 
-bool isToon = false;
+int fragMode = 0;
+int globalShape = 0;
 
 nv::vec3f camFocus(0, 0, 0);
 nv::vec3f camUp(0, 1, 0);
@@ -62,7 +63,22 @@ void setFrameBuffer()
 
 void setGeometry()
 {
-    glutSolidSphere(2, 100, 100);
+    switch (globalShape)
+    {
+        case 1:
+            glutSolidTeapot(1.5);
+            break;
+        case 2:
+            glutSolidTorus(0.5, 1.5, 100, 100);
+            break;
+        case 3:
+            glutSolidTetrahedron();
+            break;
+        default:
+            glutSolidSphere(2, 100, 100);
+            break;
+
+    }
 }
 
 void makeShadowmap(const nv::vec3f& position)
@@ -307,13 +323,17 @@ void setShaders()
     f = glCreateShader(GL_FRAGMENT_SHADER);
     
     vs = textFileRead("../../ShaderFiles/phong.vert");
-    if(!isToon)
+    if(fragMode == 2)
     {
-        fs = textFileRead("../../ShaderFiles/phong.frag");
+        fs = textFileRead("../../ShaderFiles/bumpy.frag");
+    }
+    else if (fragMode == 1)
+    {
+        fs = textFileRead("../../ShaderFiles/toon.frag");
     }
     else
     {
-        fs = textFileRead("../../ShaderFiles/toon.frag");
+        fs = textFileRead("../../ShaderFiles/phong.frag");
     }
     const char *vv = vs;
     const char *ff = fs;
@@ -434,7 +454,17 @@ int main(int argc, char** argv)
         
         if(strcmp(argv[i], "-toon") == 0)
         {
-            isToon = true;
+            fragMode = 1;
+        }
+        
+        if(strcmp(argv[i], "-bump") == 0)
+        {
+            fragMode = 2;
+        }
+        
+        if(strcmp(argv[i], "-shape") == 0)
+        {
+            globalShape = atoi(argv[i+1]);
         }
     }
     
