@@ -16,6 +16,8 @@ uniform vec3 dc[10]; //Point Lights
 
 uniform samplerCube shadowMaps[10];
 
+#define EPSILON 0.01
+
 void main()
 {
     vec3 color = ka;
@@ -33,7 +35,9 @@ void main()
         vec3 specColor = pow(clamp(dot(rDir, outDir), 0.0, 1.0), sp) * ks;
         if(dot(inDir, normal) < 0.0)
             specColor = vec3(0.0);
-        color += (diffuseColor + specColor) * pc[i];
+
+        if(length(lightPos - vertPos) <= textureCube(shadowMaps[i], -inDir).x*(1.0+EPSILON))
+            color += (diffuseColor + specColor) * pc[i];
     }
     
     for (int i = 0; i < ndl; i++)
@@ -48,10 +52,9 @@ void main()
         vec3 specColor = pow(clamp(dot(rDir, outDir), 0.0, 1.0), sp) * ks;
         if(dot(inDir, normal) < 0.0)
             specColor = vec3(0.0);
+        
         color += (diffuseColor + specColor) * dc[i];
     }
-    
-    //color = textureCube(shadowMaps[0], vec3(normal)).xyz;
     
     gl_FragColor = vec4(color, 1.0);
 }

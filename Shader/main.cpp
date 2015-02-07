@@ -8,37 +8,62 @@
 unsigned width = 1024;
 unsigned height = 768;
 
-unsigned shadowMapSize = 512;
+unsigned shadowMapSize = 1024;
 
 float theta = M_PI / 2;
 float phi = M_PI / 2;
-float camDist = 3;
+float camDist = 2;
 
 nv::vec3f camFocus(0, 0, 0);
 nv::vec3f camUp(0, 1, 0);
 
 int mouseX, mouseY;
 
-GLuint progID;
+GLuint progID, depthProgID;
 
 GLuint frameTexID = 0, frameBufferID = 0, depthBufferID = 0;
 
 std::vector<GLuint> plShadowMaps;
 
+void setGeometry()
+{
+    //glutSolidSphere(1, 100, 100);
+    
+    glutSolidTorus(0.5, 1, 100, 100);
+    
+    glBegin(GL_QUADS);
+    glNormal3f(0, 1, 0);
+    glVertex3f(-20, -2, -20);
+    glVertex3f(-20, -2, 20);
+    glVertex3f(20, -2, 20);
+    glVertex3f(20, -2, -20);
+    glEnd();
+    //glutSolidCube(1);
+}
+
 void setFrameBuffer()
 {
     if(frameTexID)
+    {
         glDeleteTextures(1, &frameTexID);
+        frameTexID = 0;
+    }
     
     if(frameBufferID)
+    {
         glDeleteFramebuffers(1, &frameBufferID);
+        frameBufferID = 0;
+    }
     
     if(depthBufferID)
+    {
         glDeleteFramebuffers(1, &depthBufferID);
+        depthBufferID = 0;
+    }
     
     glGenTextures(1, &frameTexID);
-    glBindTexture(GL_TEXTURE_2D, frameTexID);
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, frameTexID);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -46,6 +71,7 @@ void setFrameBuffer()
     
     glGenFramebuffers(1, &frameBufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+    
     
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_FLOAT, NULL);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, frameTexID, 0);
@@ -55,11 +81,7 @@ void setFrameBuffer()
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
     
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
-}
-
-void setGeometry()
-{
-    glutSolidSphere(2, 100, 100);
+    
 }
 
 void makeShadowmap(const nv::vec3f& position)
@@ -67,42 +89,102 @@ void makeShadowmap(const nv::vec3f& position)
     GLuint newCubemapTexID = 0;
     
     if(depthBufferID)
-        glDeleteFramebuffers(1, &depthBufferID);
-    
-    if(frameBufferID)
-        glDeleteFramebuffers(1, &frameBufferID);
-    
-    glGenTextures(1, &newCubemapTexID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, newCubemapTexID);
-    glActiveTexture(GL_TEXTURE1+plShadowMaps.size());
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
-    GLfloat randColors[512*512*4];
-    for(unsigned i=0; i<512*512*4; i++)
-        randColors[i] = rand() / float(RAND_MAX);
-    
-    for (unsigned face = 0; face < 6; face++)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_DEPTH_COMPONENT32,
-                     shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, randColors);
+        glDeleteFramebuffers(1, &depthBufferID);
+        depthBufferID = 0;
     }
     
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, newCubemapTexID, 0);
+    if(frameBufferID)
+    {
+        glDeleteFramebuffers(1, &frameBufferID);
+        frameBufferID = 0;
+    }
+    
+    glGenTextures(1, &newCubemapTexID);
+    
+    glActiveTexture(GL_TEXTURE1+plShadowMaps.size());
+    glBindTexture(GL_TEXTURE_CUBE_MAP, newCubemapTexID);
+    
+    
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     
     glGenFramebuffers(1, &frameBufferID);
     glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
     
-    glGenRenderbuffers(1, &depthBufferID);
-    glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, shadowMapSize, shadowMapSize);
+    nv::vec3f dirList[] =
+    {
+        nv::vec3f(1, 0, 0),
+        nv::vec3f(-1, 0, 0),
+        nv::vec3f(0, 1, 0),
+        nv::vec3f(0, -1, 0),
+        nv::vec3f(0, 0, 1),
+        nv::vec3f(0, 0, -1)
+    };
     
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
-    GLenum drawBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, drawBuffers);
+    nv::vec3f upList[] =
+    {
+        nv::vec3f(0, -1, 0),
+        nv::vec3f(0, -1, 0),
+        nv::vec3f(0, 0, 1),
+        nv::vec3f(0, 0, -1),
+        nv::vec3f(0, -1, 0),
+        nv::vec3f(0, -1, 0)
+    };
+    
+    for (unsigned face = 0; face < 6; face++)
+    {
+        nv::vec3f& dir = dirList[face];
+        nv::vec3f& up = upList[face];
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+        
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, GL_RGBA,
+                     shadowMapSize, shadowMapSize, 0, GL_RGBA, GL_FLOAT, NULL);
+    
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, newCubemapTexID, 0);
+        
+        glGenRenderbuffers(1, &depthBufferID);
+        glBindRenderbuffer(GL_RENDERBUFFER, depthBufferID);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, shadowMapSize, shadowMapSize);
+        
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferID);
+        
+        glDrawBuffer(GL_COLOR_ATTACHMENT0);
+        
+        glUseProgram(depthProgID);
+        
+        glUniform3fv(glGetUniformLocation(depthProgID, "eyePos"), 1, (GLfloat*) &position);
+        
+        glPushAttrib(GL_ALL_ATTRIB_BITS);
+        glViewport(0, 0, shadowMapSize, shadowMapSize);
+        glClearColor(0.0, 0.0, 0.0, 1.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluPerspective(90, 1.0, 0.1, 100);
+        
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        
+        nv::vec3f center = position + dir;
+        
+        gluLookAt(position.x, position.y, position.z, center.x, center.y, center.z, up.x, up.y, up.z);
+        glEnable(GL_DEPTH_TEST);
+        
+        glPushMatrix();
+        
+        setGeometry();
+        
+        glPopMatrix();
+        
+        glPopAttrib();
+    }
     
     plShadowMaps.push_back(newCubemapTexID);
 }
@@ -148,9 +230,10 @@ void setUniformsPhong()
     }
 }
 
+bool renderEnvMap = true;
+
 void display(void)
 {
-    
     
     nv::vec4f rgba;
     
@@ -186,6 +269,7 @@ void display(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0, width, 0, height);
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
@@ -233,6 +317,14 @@ void keyPress(unsigned char key, int x, int y)
     switch (key) {
         case 27:
             exit(0);
+            break;
+        case '=':
+        case '+':
+            camDist *= 0.9;
+            break;
+        case '-':
+        case '_':
+            camDist /= 0.9;
             break;
     }
 }
@@ -291,7 +383,7 @@ static char* textFileRead(const char *fileName) {
     return text;
 }
 
-void setShaders()
+GLuint setShaders(const char* vertPath, const char* fragPath)
 {
     char *vs,*fs;
     
@@ -300,8 +392,8 @@ void setShaders()
     v = glCreateShader(GL_VERTEX_SHADER);
     f = glCreateShader(GL_FRAGMENT_SHADER);
     
-    vs = textFileRead("../../ShaderFiles/phong.vert");
-    fs = textFileRead("../../ShaderFiles/phong.frag");
+    vs = textFileRead(vertPath);
+    fs = textFileRead(fragPath);
     
     const char *vv = vs;
     const char *ff = fs;
@@ -328,7 +420,7 @@ void setShaders()
         // Provide the infolog in whatever manor you deem best.
         // Exit with failure.
         glDeleteShader(v); // Don't leak the shader.
-        return;
+        return 0;
     }
     // Shader compilation is successful.
     printf("Vertex shader is ready.\n");
@@ -349,18 +441,19 @@ void setShaders()
         // Provide the infolog in whatever manor you deem best.
         // Exit with failure.
         glDeleteShader(f); // Don't leak the shader.
-        return;
+        return 0;
     }
     // Shader compilation is successful.
     printf("Fragment shader is ready.\n");
     
-    progID = glCreateProgram();
+    GLuint p = glCreateProgram();
     
-    glAttachShader(progID, v);
-    glAttachShader(progID, f);
+    glAttachShader(p, v);
+    glAttachShader(p, f);
     
-    glLinkProgram(progID);
-    glUseProgram(progID);
+    glLinkProgram(p);
+    glUseProgram(p);
+    return p;
 }
 
 void mouseMove(int x, int y)
@@ -444,12 +537,16 @@ int main(int argc, char** argv)
         exit(1);
     }
     
-    setShaders();
+    progID = setShaders("../../ShaderFiles/phong.vert", "../../ShaderFiles/phong.frag");
+    
+    depthProgID = setShaders("../../ShaderFiles/depth.vert", "../../ShaderFiles/depth.frag");
     
     for(unsigned i=0; i<plPosList.size(); i++)
         makeShadowmap(plPosList[i]);
     
     setFrameBuffer();
+    
+    
     
     glutMainLoop();
     
