@@ -1,0 +1,43 @@
+Authors:
+Weilun Sun
+Alex Hall
+
+Option Features & Command Line Suggestions
+
+========== Bump Mapping ==========
+Description:
+A procedurally generated bump map.
+
+Command Line Arguments:
+-ka 0.3, 0.1, 0.1 -kd 0.0, 0.5, 0.0 -ks 0.4, 0.4, 0.4 -sp 10 -pl 4 4 4 1 1 1 -bump
+
+========== Toon Shading ==========
+Descrpition
+A simple implementation of toon shading
+
+Command Line Arguments
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -toon
+
+========== Other Shapes ==========
+Description:
+Switch between:
+1. Cylinder
+2. Torus
+3. Tetrahedron
+4. Torus Plane
+
+Command Line Arguments
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -shape 1
+
+*Use mouse to rotate the cone.
+
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -shape 2
+
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -shape 3
+
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -shape 4
+
+========== Shadow Map ==========
+Descrpition: The floating Torus will cast a shadow on the plane beneath it. This method uses a shadow map to generate a texture for the plane.
+
+-ka 0.1, 0.1, 0.3 -kd 0.0, 0.0, 0.5 -ks 0.4, 0.4, 0.4 -sp 10 -pl 2 2 4 1 1 1 -shape 4
